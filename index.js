@@ -25,6 +25,7 @@ async function run() {
     await client.connect();
     const database = client.db("reChargeDB");
     const offersCollection = database.collection("offers");
+    const rechargeCollection = database.collection("recharges");
     app.get("/offers", async (req, res) => {
       let page = req.query.page;
       const size = parseInt(req.query.size);
@@ -53,6 +54,19 @@ async function run() {
         count,
         offers,
       });
+    });
+    app.post("/recharges", async (req, res) => {
+      const rechargeData = req.body;
+      const result = await rechargeCollection.insertOne(rechargeData);
+      console.log(result);
+      res.json(result);
+    });
+
+    app.get("/recharges", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const result = await rechargeCollection.find(query).toArray();
+      res.json(result);
     });
   } finally {
     // await client.close();
